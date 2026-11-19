@@ -1,4 +1,4 @@
-name: Build GPU Power Image
+﻿name: Build GPU Power Image
 
 on:
   push:
