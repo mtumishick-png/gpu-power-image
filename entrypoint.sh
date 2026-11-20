@@ -55,6 +55,13 @@ else
     echo "[5/6] Gaming disabled (GAMING != true)"
 fi
 
+
+# --- Chrome Remote Desktop ---
+if [ "$CRD_MODE" = "on" ]; then
+    echo "[CRD] Starting Chrome Remote Desktop..."
+    /opt/google/chrome-remote-desktop/chrome-remote-desktop --start 2>&1 | tee /tmp/crd-start.log &
+    echo "[CRD] Authorization URL: check /tmp/crd-start.log"
+fi
 # --- 6. Keep container alive ---
 echo "[6/6] Container ready. SSH:22 RDP:3389"
 echo "=========================================="
