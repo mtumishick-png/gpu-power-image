@@ -47,7 +47,7 @@ RUN echo "startxfce4" > /root/.xsession \
     && sed -i 's/^port=3389/port=3389/' /etc/xrdp/xrdp.ini
 
 # --- 7b. Chrome Remote Desktop ---
-RUN wget -qO /tmp/chrome-remote-desktop.deb "https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb" \
+RUN apt-get update && apt-get install -y --no-install-recommends psmisc python3-packaging python3-psutil python3-xdg xbase-clients xdg-utils xserver-xorg-video-dummy xvfb && wget -qO /tmp/chrome-remote-desktop.deb "https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb" \
     && apt-get install -y /tmp/chrome-remote-desktop.deb \
     && rm /tmp/chrome-remote-desktop.deb \
     && echo "exec startxfce4" > /root/.chrome-remote-desktop-session \
