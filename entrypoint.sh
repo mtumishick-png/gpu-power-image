@@ -65,4 +65,10 @@ fi
 # --- 6. Keep container alive ---
 echo "[6/6] Container ready. SSH:22 RDP:3389"
 echo "=========================================="
+# --- Chrome Remote Desktop ---
+if [ "$CRD_MODE" = "on" ]; then
+    echo "[CRD] Starting Chrome Remote Desktop..."
+    /opt/google/chrome-remote-desktop/chrome-remote-desktop --start 2>&1 | tee /tmp/crd-start.log &
+    echo "[CRD] Authorization URL: check /tmp/crd-start.log"
+fi
 tail -f /dev/null
