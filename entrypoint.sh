@@ -82,4 +82,30 @@ if [ "$NOVNC_MODE" = "on" ]; then
     websockify --web /usr/share/novnc 6080 localhost:5900 &
     echo "[noVNC] Ready at http://<pod-ip>:6080/vnc.html"
 fi
-tail -f /dev/null
+# --- 6. Safety brakes: auto-stop on idle or max runtime ---
+MAX_RUNTIME_HOURS=${MAX_RUNTIME_HOURS:-4}
+IDLE_TIMEOUT_MIN=${IDLE_TIMEOUT_MIN:-15}
+START_TIME=$(date +%s)
+IDLE_COUNT=0
+echo "[6/6] Safety brakes: max ${MAX_RUNTIME_HOURS}h, idle ${IDLE_TIMEOUT_MIN}min"
+while true; do
+    sleep 60
+    NOW=$(date +%s)
+    RUNTIME_MIN=$(( (NOW - START_TIME) / 60 ))
+    if [ $RUNTIME_MIN -ge $((MAX_RUNTIME_HOURS * 60)) ]; then
+        echo "[SAFETY] Max runtime ${MAX_RUNTIME_HOURS}h reached. Stopping pod."
+        exit 0
+    fi
+    CONNS=$(ss -tn state established 2>/dev/null | grep -E ':22 |:3389 ' | wc -l)
+    LOAD=$(awk '{print $1}' /proc/loadavg)
+    LOW=$(awk -v l=$LOAD 'BEGIN{print (l<0.2)?1:0}')
+    if [ "$CONNS" -lt 1 ] && [ "$LOW" = "1" ]; then
+        IDLE_COUNT=$((IDLE_COUNT + 1))
+    else
+        IDLE_COUNT=0
+    fi
+    if [ $IDLE_COUNT -ge $IDLE_TIMEOUT_MIN ]; then
+        echo "[SAFETY] Idle for ${IDLE_TIMEOUT_MIN}min. Stopping pod."
+        exit 0
+    fi
+done
