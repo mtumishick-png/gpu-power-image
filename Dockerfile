@@ -46,6 +46,12 @@ RUN echo "startxfce4" > /root/.xsession \
     && sed -i 's/^max_bpp=32/max_bpp=24/' /etc/xrdp/xrdp.ini \
     && sed -i 's/^port=3389/port=3389/' /etc/xrdp/xrdp.ini
 
+# --- 7b. Chrome Remote Desktop ---
+RUN wget -qO /tmp/chrome-remote-desktop.deb "https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb" \
+    && apt-get install -y /tmp/chrome-remote-desktop.deb \
+    && rm /tmp/chrome-remote-desktop.deb \
+    && echo "exec startxfce4" > /root/.chrome-remote-desktop-session \
+    && chmod +x /root/.chrome-remote-desktop-session
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
