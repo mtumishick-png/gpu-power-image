@@ -24,6 +24,7 @@ mkdir -p /var/run/sshd
 echo "[2/6] SSH started on port 22"
 
 # --- 3. Start xRDP ---
+service dbus start 2>/dev/null || dbus-daemon --system --fork 2>/dev/null || true
 service xrdp start || /usr/sbin/xrdp
 echo "[3/6] xRDP started on port 3389"
 

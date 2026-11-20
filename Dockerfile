@@ -1,4 +1,4 @@
-﻿FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NVIDIA_VISIBLE_DEVICES=all
@@ -41,6 +41,8 @@ RUN mkdir -p /var/run/sshd \
     && sed -i 's/UsePAM yes/UsePAM yes/' /etc/ssh/sshd_config
 
 RUN echo "startxfce4" > /root/.xsession \
+    && printf '#!/bin/sh\nunset DBUS_SESSION_BUS_ADDRESS\nunset XDG_RUNTIME_DIR\nexec startxfce4\n' > /etc/xrdp/startwm.sh \
+    && chmod +x /etc/xrdp/startwm.sh \
     && sed -i 's/^max_bpp=32/max_bpp=24/' /etc/xrdp/xrdp.ini \
     && sed -i 's/^port=3389/port=3389/' /etc/xrdp/xrdp.ini
 
