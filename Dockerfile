@@ -52,6 +52,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends psmisc python3-
     && rm /tmp/chrome-remote-desktop.deb \
     && echo "exec startxfce4" > /root/.chrome-remote-desktop-session \
     && chmod +x /root/.chrome-remote-desktop-session
+# --- 7c. noVNC (browser-based VNC) ---
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    xvfb x11vnc novnc websockify \
+    && rm -rf /var/lib/apt/lists/*
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
