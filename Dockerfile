@@ -7,7 +7,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl wget git vim tmux htop nano unzip jq \
     openssh-server \
-    xfce4 xfce4-goodies xfce4-session xrdp dbus dbus-x11 \
+    xfce4 xfce4-goodies xfce4-session xrdp dbus dbus-x11 xorgxrdp xserver-xorg-core \
     python3 python3-pip python3-venv \
     software-properties-common \
     gnupg lsb-release ca-certificates \
