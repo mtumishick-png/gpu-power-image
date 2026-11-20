@@ -71,4 +71,15 @@ if [ "$CRD_MODE" = "on" ]; then
     /opt/google/chrome-remote-desktop/chrome-remote-desktop --start 2>&1 | tee /tmp/crd-start.log &
     echo "[CRD] Authorization URL: check /tmp/crd-start.log"
 fi
+# --- noVNC ---
+if [ "$NOVNC_MODE" = "on" ]; then
+    echo "[noVNC] Starting virtual display :1..."
+    Xvfb :1 -screen 0 1360x768x24 &
+    sleep 2
+    DISPLAY=:1 startxfce4 &
+    sleep 2
+    x11vnc -display :1 -forever -shared -nopw -listen 0.0.0.0 -rfbport 5900 &
+    websockify --web /usr/share/novnc 6080 localhost:5900 &
+    echo "[noVNC] Ready at http://<pod-ip>:6080/vnc.html"
+fi
 tail -f /dev/null
