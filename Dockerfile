@@ -31,9 +31,7 @@ RUN (SUN_URL=$(curl -s https://api.github.com/repos/LizardByte/Sunshine/releases
          wget -qO /tmp/sunshine.deb "$SUN_URL" && apt-get install -y /tmp/sunshine.deb && rm /tmp/sunshine.deb; \
        else echo "WARNING: Sunshine asset not found, skipping"; fi) || echo "WARNING: Sunshine install skipped"
 
-RUN (wget -qO /tmp/parsec.deb "https://builds.parsec.app/parsec-linux.deb" \
-    && apt-get install -y /tmp/parsec.deb \
-    && rm /tmp/parsec.deb) || echo "WARNING: Parsec install skipped"
+# Parsec removed (URL returns 403)
 
 RUN mkdir -p /var/run/sshd \
     && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
