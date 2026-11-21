@@ -54,6 +54,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends psmisc python3-
 RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb x11vnc novnc websockify \
     && rm -rf /var/lib/apt/lists/*
+# --- 7d. Firefox ---
+RUN wget -qO /tmp/firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" \
+    && tar -xjf /tmp/firefox.tar.bz2 -C /opt/ \
+    && ln -sf /opt/firefox/firefox /usr/local/bin/firefox \
+    && rm /tmp/firefox.tar.bz2
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
