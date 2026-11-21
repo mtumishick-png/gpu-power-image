@@ -95,7 +95,7 @@ while true; do
         echo "[SAFETY] Max runtime ${MAX_RUNTIME_HOURS}h reached. Stopping pod."
         exit 0
     fi
-    CONNS=$(ss -tn state established 2>/dev/null | grep -E ':22 |:3389 ' | wc -l)
+    SSH_ACTIVE=$(ps aux | grep -c "[s]shd: root"); RDP_ACTIVE=$(ps aux | grep -c "[x]rdp"); CONNS=$((SSH_ACTIVE + RDP_ACTIVE))
     LOAD=$(awk '{print $1}' /proc/loadavg)
     LOW=$(awk -v l=$LOAD 'BEGIN{print (l<0.2)?1:0}')
     if [ "$CONNS" -lt 1 ] && [ "$LOW" = "1" ]; then
