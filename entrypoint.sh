@@ -4,7 +4,7 @@
 # Runs on every container boot. Configures SSH, RDP, WARP,
 # and starts gaming services based on env vars.
 # ============================================================
-set -e
+set +e
 
 echo "=========================================="
 echo " GPU Inc Power Image — Starting"
@@ -73,7 +73,7 @@ fi
 # --- Quantum RNG (ANU QRNG API) ---
 if [ "$QUANTUM_RNG" = "on" ]; then
     echo "[QRNG] Fetching quantum random bytes from ANU..."
-    QRNG_JSON=$(curl -s --max-time 10 "https://qrng.anu.edu.au/API/jsonI.php?length=1024&type=uint8" 2>/dev/null)
+    QRNG_JSON=$(curl -s --max-time 10 "https://qrng.anu.edu.au/API/jsonI.php?length=1024&type=uint8" 2>/dev/null || true)
     if echo "$QRNG_JSON" | grep -q '"success":true'; then
         echo "$QRNG_JSON" | grep -o '"data":\[[^]]*\]' | sed 's/"data":\[//;s/\]//' | tr ',' '\n' | while read n; do printf "\\x$(printf %02x $n)"; done > /dev/urandom 2>/dev/null || true
         echo "[QRNG] Quantum entropy injected into kernel pool"
