@@ -49,11 +49,12 @@ RUN echo "startxfce4" > /root/.xsession \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb x11vnc novnc websockify \
     && rm -rf /var/lib/apt/lists/*
-# --- 7d. Firefox ---
-RUN curl -L -o /tmp/firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" \
-    && tar -xjf /tmp/firefox.tar.bz2 -C /opt/ \
-    && ln -sf /opt/firefox/firefox /usr/local/bin/firefox \
-    && rm /tmp/firefox.tar.bz2
+# --- 7d. Firefox (via Mozilla PPA) ---
+RUN add-apt-repository ppa:mozillateam/ppa -y \
+    && printf 'Package: firefox*\nPin: release o=LP-PPA-mozillateam\nPin-Priority: 1001\n' > /etc/apt/preferences.d/mozilla-firefox \
+    && apt-get update \
+    && apt-get install -y firefox \
+    && rm -rf /var/lib/apt/lists/*
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
