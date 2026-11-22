@@ -70,16 +70,18 @@ if [ "$NOVNC_MODE" = "on" ]; then
     websockify --web /usr/share/novnc 6080 localhost:5900 &
     echo "[noVNC] Ready at http://<pod-ip>:6080/vnc.html"
 fi
-# --- Quantum RNG (ANU QRNG API) ---
+# --- Quantum RNG (ANU QRNG API, 2 rounds) ---
 if [ "$QUANTUM_RNG" = "on" ]; then
-    echo "[QRNG] Fetching quantum random bytes from ANU..."
-    QRNG_JSON=$(curl -s --max-time 10 "https://qrng.anu.edu.au/API/jsonI.php?length=1024&type=uint8" 2>/dev/null || true)
-    if echo "$QRNG_JSON" | grep -q '"success":true'; then
-        echo "$QRNG_JSON" | grep -o '"data":\[[^]]*\]' | sed 's/"data":\[//;s/\]//' | tr ',' '\n' | while read n; do printf "\\x$(printf %02x $n)"; done > /dev/urandom 2>/dev/null || true
-        echo "[QRNG] Quantum entropy injected into kernel pool"
-    else
-        echo "[QRNG] WARNING: ANU QRNG unavailable, using haveged fallback"
-    fi
+    for round in 1 2; do
+        echo "[QRNG] Fetching quantum random bytes from ANU (round $round)..."
+        QRNG_JSON=$(curl -s --max-time 10 "https://qrng.anu.edu.au/API/jsonI.php?length=1024&type=uint8" 2>/dev/null || true)
+        if echo "$QRNG_JSON" | grep -q '"success":true'; then
+            echo "$QRNG_JSON" | grep -o '"data":\[[^]]*\]' | sed 's/"data":\[//;s/\]//' | tr ',' '\n' | while read n; do printf "\\x$(printf %02x $n)"; done > /dev/urandom 2>/dev/null || true
+            echo "[QRNG] Quantum entropy injected (round $round)"
+        else
+            echo "[QRNG] WARNING: ANU QRNG unavailable (round $round), using haveged fallback"
+        fi
+    done
 fi
 # --- 6. Safety brakes: auto-stop on idle or max runtime ---
 MAX_RUNTIME_HOURS=${MAX_RUNTIME_HOURS:-4}
