@@ -55,6 +55,17 @@ RUN add-apt-repository ppa:mozillateam/ppa -y \
     && apt-get update \
     && apt-get install -y firefox \
     && rm -rf /var/lib/apt/lists/*
+# --- 7f. OpenSSH 9.x upgrade (PQC support) ---
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libssl-dev zlib1g-dev libpam0g-dev \
+    && wget -qO /tmp/openssh.tar.gz "https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-9.9p1.tar.gz" \
+    && tar -xzf /tmp/openssh.tar.gz -C /tmp \
+    && cd /tmp/openssh-9.9p1 \
+    && ./configure --prefix=/usr --sysconfdir=/etc/ssh --with-pam --with-ssl-engine \
+    && make -j$(nproc) \
+    && make install \
+    && rm -rf /tmp/openssh* \
+    && rm -rf /var/lib/apt/lists/*
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
