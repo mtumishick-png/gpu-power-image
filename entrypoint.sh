@@ -83,6 +83,19 @@ if [ "$QUANTUM_RNG" = "on" ]; then
         fi
     done
 fi
+# --- Tailscale (join home LAN) ---
+if [ "$TAILSCALE_AUTHKEY" ]; then
+    echo "[Tailscale] Starting..."
+    mkdir -p /var/lib/tailscale
+    if [ -e /dev/net/tun ]; then
+        tailscaled --state=/var/lib/tailscale/tailscaled.state &
+    else
+        tailscaled --tun=userspace-networking --socks5-server=localhost:1055 --state=/var/lib/tailscale/tailscaled.state &
+    fi
+    sleep 3
+    tailscale up --authkey=$TAILSCALE_AUTHKEY --hostname=$(hostname) --accept-routes
+    echo "[Tailscale] Joined: $(tailscale ip -4 2>/dev/null)"
+fi
 # --- 6. Safety brakes: auto-stop on idle or max runtime ---
 MAX_RUNTIME_HOURS=${MAX_RUNTIME_HOURS:-4}
 IDLE_TIMEOUT_MIN=${IDLE_TIMEOUT_MIN:-15}
