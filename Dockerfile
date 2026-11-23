@@ -66,6 +66,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && make install \
     && rm -rf /tmp/openssh* \
     && rm -rf /var/lib/apt/lists/*
+# --- 7g. Tailscale (join home LAN) ---
+RUN curl -fsSL https://tailscale.com/install.sh | sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
